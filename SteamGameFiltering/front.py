@@ -1,5 +1,7 @@
 import streamlit as st
 import requests
+from dataset import recomendation, steam_games, df_usuario_test, steam_games_users_lite, new_sgr_clear
+
 
 # Configuração da sessão para armazenar variáveis
 if 'avaliacoes_anteriores' not in st.session_state:
@@ -15,7 +17,7 @@ st.write("Bem-vindo à nossa aplicação para recomendação de títulos de jogo
 # Verificando se o número de avaliações já atingiu o limite
 if st.session_state.numero_avaliacoes < 5:
     # Entrada do usuário para o nome do jogo
-    nome_do_jogo = st.text_input("Nome do Jogo:")
+    nome_do_jogo = st.text_input("Nome do Jogo:", key=f"nome_do_jogo_{st.session_state.numero_avaliacoes}")
 
     # Entrada do usuário para a avaliação do jogo
     avaliacao = st.radio("Você Recomendaria Esse Jogo Para Outras Pessoas?", ["Sim", "Não"])
@@ -80,7 +82,7 @@ if st.session_state.numero_avaliacoes < 5:
             st.write(f"Erro ao obter informações. Status Code - Jogo: {response_jogo.status_code}, Cotação: {response_cotacao.status_code}")
 
 if st.session_state.numero_avaliacoes >= 5:
-    st.write("Você atingiu o limite de 5 avaliações.")
+    st.write("Hora de saber os melhores títulos recomendados para você")
     st.text_input("Nome do Jogo:", value="", disabled=True)
     st.radio("Você Recomendaria Esse Jogo Para Outras Pessoas?", ["Sim", "Não"], index=0, disabled=True)
     st.button("Adicionar à Lista de Avaliações", disabled=True)
@@ -92,4 +94,9 @@ for avaliacao in st.session_state.avaliacoes_anteriores:
     st.write(f"Nome do Jogo: {avaliacao['nome_do_jogo']}")
     st.write(f"Avaliação: {avaliacao['avaliacao']}")
     st.write(f"Preço em Dólar: {avaliacao['preco_jogo']}")
+    st.write(f"Preço em Real: {avaliacao['preco_real']:.2f}")
     st.write("---")
+
+if st.button("Obter Recomendações"):
+    recomendações = recomendation(steam_games, new_sgr_clear, st.session_state.avaliacoes_anteriores, steam_games_users_lite)
+    st.write(recomendações)

@@ -129,7 +129,7 @@ df_usuario_test.head()
 # In[13]:
 
 
-steam_games_users_lite = steam_games_users.sample(n=1000)
+steam_games_users_lite = steam_games_users.sample(n=100)
 steam_games_users_lite.head()
 
 
