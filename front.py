@@ -5,6 +5,7 @@ import requests
 if 'avaliacoes_anteriores' not in st.session_state:
     st.session_state.avaliacoes_anteriores = []
     st.session_state.numero_avaliacoes = 0
+    st.session_state.inputs_nome_jogo = {}
 
 # Título da aplicação
 st.title("Avaliação de Títulos de Jogos da Steam")
@@ -19,6 +20,10 @@ if st.session_state.numero_avaliacoes < 5:
 
     # Entrada do usuário para a avaliação do jogo
     avaliacao = st.radio("Você Recomendaria Esse Jogo Para Outras Pessoas?", ["Sim", "Não"])
+
+    nome_jogos = st.session_state.inputs_nome_jogo
+
+    print(nome_jogos)
 
     # Botão para submeter a avaliação
     if st.button("Adicionar à Lista de Avaliações"):
@@ -69,6 +74,9 @@ if st.session_state.numero_avaliacoes < 5:
                     st.session_state.avaliacoes_anteriores.append(avaliacao_info)
                     st.session_state.numero_avaliacoes += 1
 
+                    # Armazenando o nome do jogo no dicionário de inputs
+                    st.session_state.inputs_nome_jogo[nome_do_jogo] = avaliacao
+
                 # Exibindo a imagem da chave "thumb" se existir
                 if 'thumb' in jogo_data[0]:
                     st.image(jogo_data[0]['thumb'], caption="Thumbnail do Jogo", width=150)
@@ -87,10 +95,17 @@ if st.session_state.numero_avaliacoes >= 5:
     st.button("Adicionar à Lista de Avaliações", disabled=True)
 
 # Exibindo a lista de avaliações anteriores
-st.header("Lista de Avaliações Anteriores")
+st.header("Detalhes dos Jogos")
 for avaliacao in st.session_state.avaliacoes_anteriores:
     st.write(f"Nome do Jogo: {avaliacao['nome_do_jogo']}")
     st.write(f"Avaliação: {avaliacao['avaliacao']}")
     st.write(f"Preço em Dólar: {avaliacao['preco_jogo']}")
     st.write(f"Preço em Real: {avaliacao['preco_real']:.2f}")
+    st.write("---")
+
+# Exibindo a lista de inputs de nome do jogo
+st.header("Overview das Avaliações")
+for nome_jogo, avaliacao in st.session_state.inputs_nome_jogo.items():
+    st.write(f"Nome do Jogo: {nome_jogo}")
+    st.write(f"Avaliação: {avaliacao}")
     st.write("---")

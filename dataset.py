@@ -7,9 +7,9 @@ import os  # Importe a biblioteca os para manipulação de caminhos
 script_dir = os.path.dirname(__file__)
 
 # Atualize os caminhos dos arquivos CSV
-steam_games_users = pd.read_csv("dataset/users.csv")
-steam_games = pd.read_csv("dataset/games.csv")
-steam_games_recomendation = pd.read_csv("dataset/recommendations.csv")
+steam_games_users = pd.read_csv("C:/Users/jmayo/Downloads/dataset/users.csv")
+steam_games = pd.read_csv("C:/Users/jmayo/Downloads/dataset/games.csv")
+steam_games_recomendation = pd.read_csv("C:/Users/jmayo/Downloads/dataset/recommendations.csv")
 
 
 # In[2]:
