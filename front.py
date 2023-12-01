@@ -1,11 +1,15 @@
 import streamlit as st
 import requests
+import pandas as pd
+from dataset import recomendation, steam_games, new_sgr_clear, steam_games_users_lite
+import random
 
 # Configuração da sessão para armazenar variáveis
 if 'avaliacoes_anteriores' not in st.session_state:
     st.session_state.avaliacoes_anteriores = []
     st.session_state.numero_avaliacoes = 0
     st.session_state.inputs_nome_jogo = {}
+    st.session_state.rec_list = []
 
 # Título da aplicação
 st.title("Avaliação de Títulos de Jogos da Steam")
@@ -16,17 +20,17 @@ st.write("Bem-vindo à nossa aplicação para recomendação de títulos de jogo
 # Verificando se o número de avaliações já atingiu o limite
 if st.session_state.numero_avaliacoes < 5:
     # Entrada do usuário para o nome do jogo
-    nome_do_jogo = st.text_input("Nome do Jogo:")
+    nome_do_jogo = st.text_input("Nome do Jogo:" , key="name")
 
     # Entrada do usuário para a avaliação do jogo
-    avaliacao = st.radio("Você Recomendaria Esse Jogo Para Outras Pessoas?", ["Sim", "Não"])
+    avaliacao = st.radio("Você Recomendaria Esse Jogo Para Outras Pessoas?", ["Sim", "Não"], key="av")
 
-    nome_jogos = st.session_state.inputs_nome_jogo
+    game_name = st.session_state.inputs_nome_jogo
+    rec =  st.session_state.rec_list 
 
-    print(nome_jogos)
-
+   
     # Botão para submeter a avaliação
-    if st.button("Adicionar à Lista de Avaliações"):
+    if st.button("Adicionar à Lista de Avaliações", key="add"):
         # Fazendo a requisição à API usando o nome do jogo inserido
         url_jogo = f"https://www.cheapshark.com/api/1.0/games?title={nome_do_jogo}&limit=1"
         url_cotacao = f"https://api.exchangerate-api.com/v4/latest/USD"  # Nova API de cotação
@@ -67,15 +71,31 @@ if st.session_state.numero_avaliacoes < 5:
                         'nome_do_jogo': jogo_data[0]['external'],
                         'avaliacao': avaliacao,
                         'preco_jogo': preco_jogo,
-                        'preco_real': preco_real
+                        'preco_real': preco_real,
                     }
 
+                    
                     # Adicionando o dicionário à lista de avaliações anteriores
                     st.session_state.avaliacoes_anteriores.append(avaliacao_info)
                     st.session_state.numero_avaliacoes += 1
 
                     # Armazenando o nome do jogo no dicionário de inputs
                     st.session_state.inputs_nome_jogo[nome_do_jogo] = avaliacao
+
+                    game_line = steam_games.loc[steam_games["title"] == avaliacao_info['nome_do_jogo']].values
+
+                    app_id = game_line[0]
+
+                    game_name = {
+                        'app_id': app_id,
+                        'is_recommended': avaliacao,
+                        'user_id': random.randint(0,500)
+                    }
+
+                    rec.append(game_name)
+
+                    print(game_name)
+                    print(rec)
 
                 # Exibindo a imagem da chave "thumb" se existir
                 if 'thumb' in jogo_data[0]:
@@ -109,3 +129,20 @@ for nome_jogo, avaliacao in st.session_state.inputs_nome_jogo.items():
     st.write(f"Nome do Jogo: {nome_jogo}")
     st.write(f"Avaliação: {avaliacao}")
     st.write("---")
+
+if st.button("Obter Recomendações"):
+
+    lista_dics = st.session_state.rec_list
+    
+    result = pd.DataFrame()
+
+    lista_rec = recomendation(steam_games, new_sgr_clear, result, steam_games_users_lite)
+
+    if lista_rec:
+        st.header("Recomendações:")
+        for jogo in lista_rec:
+            st.write(f"Nome do Jogo: {jogo[1]}")
+            st.write(f"Steam Rating: {jogo[0]}")
+            st.write("---")
+
+
