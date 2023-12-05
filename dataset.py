@@ -7,9 +7,9 @@ import os  # Importe a biblioteca os para manipulação de caminhos
 script_dir = os.path.dirname(__file__)
 
 # Atualize os caminhos dos arquivos CSV
-steam_games_users = pd.read_csv("C:/Users/jmayo/Downloads/dataset/users.csv")
-steam_games = pd.read_csv("C:/Users/jmayo/Downloads/dataset/games.csv")
-steam_games_recomendation = pd.read_csv("C:/Users/jmayo/Downloads/dataset/recommendations.csv")
+steam_games_users = pd.read_csv("dataset/users.csv")
+steam_games = pd.read_csv("dataset/games.csv")
+steam_games_recomendation = pd.read_csv("dataset/recommendations.csv")
 
 
 # In[2]:
@@ -95,7 +95,7 @@ steam_games_users.head(10)
 # In[6]:
 
 
-steam_games_users.info()
+#steam_games_users.info()
 
 
 # In[7]:
@@ -107,7 +107,7 @@ steam_games.head(10)
 # In[8]:
 
 
-steam_games_recomendation.info(10)
+#steam_games_recomendation.info(10)
 
 
 # In[9]:
@@ -143,25 +143,26 @@ df_usuario_test.head()
 # In[13]:
 
 
-steam_games_users_lite = steam_games_users.sample(n=100)
+steam_games_users_lite = steam_games_users.sample(n=10000)
 steam_games_users_lite.head()
 
 
 # In[14]:
 
 
-l = recomendation(steam_games ,new_sgr_clear, df_usuario_test, steam_games_users_lite)
+#l = recomendation(steam_games ,new_sgr_clear, df_usuario_test, steam_games_users_lite)
 
 
 # In[15]:
 
 
-print(l)
+# print(l)
 
 # In[16] Games Query for Title:
 
 
 # LOOP
+'''
 lista_dics = []
 
 nome_do_jogo_inputado = "Rust"
@@ -182,5 +183,6 @@ df_usuario_input = pd.DataFrame([lista_dics[0], lista_dics[1], lista_dics[2], li
 
 Lista_recomendações = recomendation(steam_games, new_sgr_clear, df_usuario_input, steam_games_users_lite)
 
+'''
 #print(Lista_recomendações[0][0])
 #print(Lista_recomendações[0][1])

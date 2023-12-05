@@ -3,6 +3,7 @@ import requests
 import pandas as pd
 from dataset import recomendation, steam_games, new_sgr_clear, steam_games_users_lite
 import random
+import numpy as np
 
 # Configuração da sessão para armazenar variáveis
 if 'avaliacoes_anteriores' not in st.session_state:
@@ -69,7 +70,7 @@ if st.session_state.numero_avaliacoes < 5:
                     # Armazenando as informações em um dicionário
                     avaliacao_info = {
                         'nome_do_jogo': jogo_data[0]['external'],
-                        'avaliacao': avaliacao,
+                        'avaliacao': 1 if avaliacao == 'Sim' else 0,
                         'preco_jogo': preco_jogo,
                         'preco_real': preco_real,
                     }
@@ -84,18 +85,17 @@ if st.session_state.numero_avaliacoes < 5:
 
                     game_line = steam_games.loc[steam_games["title"] == avaliacao_info['nome_do_jogo']].values
 
-                    app_id = game_line[0]
+                    if np.any(game_line):
 
-                    game_name = {
-                        'app_id': app_id,
-                        'is_recommended': avaliacao,
-                        'user_id': random.randint(0,500)
-                    }
+                        app_id = game_line[0][0]
 
-                    rec.append(game_name)
+                        game_name = {
+                            'app_id': app_id,
+                            'is_recommended': 1 if avaliacao == 'Sim' else 0,
+                            'user_id': random.randint(0,500)
+                        }
 
-                    print(game_name)
-                    print(rec)
+                        rec.append(game_name)
 
                 # Exibindo a imagem da chave "thumb" se existir
                 if 'thumb' in jogo_data[0]:
@@ -132,9 +132,9 @@ for nome_jogo, avaliacao in st.session_state.inputs_nome_jogo.items():
 
 if st.button("Obter Recomendações"):
 
-    lista_dics = st.session_state.rec_list
+    lista_dics = rec
     
-    result = pd.DataFrame()
+    result = pd.DataFrame(lista_dics)
 
     lista_rec = recomendation(steam_games, new_sgr_clear, result, steam_games_users_lite)
 
@@ -144,5 +144,8 @@ if st.button("Obter Recomendações"):
             st.write(f"Nome do Jogo: {jogo[1]}")
             st.write(f"Steam Rating: {jogo[0]}")
             st.write("---")
+    else:
+        st.write("Nenhum Jogo Recomendado.")
+
 
 
